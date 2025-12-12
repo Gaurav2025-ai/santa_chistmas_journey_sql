@@ -1,814 +1,1109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Week 1 - SELECT *</title>
+    <title>🎅 Santa's Christmas SQL Journey</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas&family=Fredoka+One:wght@400&family=Poppins:wght@300;400;600;700&display=swap');
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-            color: #e94560;
-            font-family: 'Courier New', monospace;
-            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
         }
         
-        .branding {
-            position: fixed;
-            top: 80px;
-            left: 10px;
-            background: rgba(26, 26, 46, 0.9);
-            border: 1px solid #e94560;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 11px;
-            color: #bbe1fa;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 2px 10px rgba(233, 69, 96, 0.3);
-        }
-        
-        .header {
+        .snow {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            background: linear-gradient(90deg, #1a1a2e, #16213e);
-            border-bottom: 2px solid #e94560;
-            padding: 20px;
-            text-align: center;
-            color: #bbe1fa;
-            font-size: 28px;
-            font-weight: bold;
-            z-index: 1001;
-            box-shadow: 0 2px 10px rgba(233, 69, 96, 0.3);
-            text-shadow: 0 0 20px rgba(187, 225, 250, 0.8);
-            animation: headerGlow 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes headerGlow {
-            from { 
-                text-shadow: 0 0 20px rgba(187, 225, 250, 0.8);
-                transform: scale(1);
-            }
-            to { 
-                text-shadow: 0 0 30px rgba(233, 69, 96, 0.9), 0 0 40px rgba(187, 225, 250, 0.6);
-                transform: scale(1.02);
-            }
-        }
-        
-        .branding div {
-            margin: 2px 0;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 100px 20px 20px 20px;
-        }
-        
-        .neon-title {
-            font-size: 3rem;
-            text-align: center;
-            margin: 30px 0;
-            background: linear-gradient(45deg, #e94560, #f27121, #e94560);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 20px #e94560); }
-            to { filter: drop-shadow(0 0 30px #f27121); }
-        }
-        
-        .code-block {
-            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
-            border: 2px solid #e94560;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            box-shadow: 0 8px 32px rgba(233, 69, 96, 0.2);
-        }
-        
-        .table-container {
-            background: linear-gradient(145deg, #1a1a2e, #252540);
-            border: 2px solid #0f4c75;
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 20px 0;
-            box-shadow: 0 4px 20px rgba(15, 76, 117, 0.3);
-        }
-        
-        .table-info {
-            background: linear-gradient(90deg, #0f4c75, #3282b8);
-            padding: 12px 20px;
-            color: #bbe1fa;
-            font-size: 15px;
-            font-weight: bold;
-            border-bottom: 2px solid #0f4c75;
-        }
-        
-        table {
             width: 100%;
-            border-collapse: collapse;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
         
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #3282b8;
-        }
-        
-        th {
-            background: linear-gradient(135deg, #0f4c75, #3282b8);
-            color: #bbe1fa;
-            text-shadow: 0 0 10px rgba(187, 225, 250, 0.5);
-            font-weight: bold;
-        }
-        
-        td {
-            color: #bbe1fa;
-            background: rgba(50, 130, 184, 0.1);
-        }
-        
-        .query-input {
-            width: 100%;
-            background: linear-gradient(145deg, #1a1a2e, #252540);
-            border: 2px solid #e94560;
-            color: #bbe1fa;
-            padding: 18px;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            border-radius: 8px;
-            margin: 15px 0;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .execute-btn {
-            background: linear-gradient(45deg, #e94560, #f27121);
-            border: none;
-            color: #fff;
-            padding: 15px 35px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
-        }
-        
-        .execute-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
-        }
-        
-        .hint-btn {
-            background: linear-gradient(45deg, #f27121, #ffa726);
-            border: none;
-            color: #fff;
-            padding: 10px 25px;
-            font-size: 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 15px;
-            transition: all 0.3s;
-            box-shadow: 0 3px 10px rgba(242, 113, 33, 0.4);
-        }
-        
-        .hint-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(242, 113, 33, 0.6);
-        }
-        
-        .result {
-            margin-top: 20px;
-            padding: 18px;
-            background: linear-gradient(135deg, #0f4c75, #3282b8);
-            border-left: 4px solid #bbe1fa;
-            border-radius: 8px;
-            color: #bbe1fa;
-            box-shadow: 0 4px 15px rgba(15, 76, 117, 0.3);
-        }
-        
-        .explanation {
-            line-height: 1.8;
-            color: #bbe1fa;
-        }
-        
-        .explanation ul {
-            margin: 15px 0;
-            padding-left: 20px;
-        }
-        
-        .explanation li {
-            margin: 10px 0;
-        }
-        
-        .highlight {
-            color: #f27121;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(242, 113, 33, 0.5);
-        }
-        
-        .animation-demo {
-            margin-top: 25px;
-            padding: 25px;
-            background: linear-gradient(145deg, #1a1a2e, #252540);
-            border-radius: 12px;
-            border: 2px solid #3282b8;
-            box-shadow: 0 6px 25px rgba(50, 130, 184, 0.2);
-        }
-        
-        .demo-query {
-            background: linear-gradient(135deg, #2a2a3e, #1e1e2e);
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            color: #e94560;
-            margin-bottom: 20px;
-            border-left: 4px solid #e94560;
-            font-size: 18px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .typing-text {
-            overflow: hidden;
-            border-right: 3px solid #e94560;
-            white-space: nowrap;
-            width: 0;
-            animation: typing 3s steps(20, end) forwards, blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: #e94560; }
-        }
-        
-        .demo-table {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-        
-        .demo-table.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .demo-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            padding: 8px;
-            background: linear-gradient(135deg, #2a2a3e, #1e1e2e);
-            border-radius: 8px;
-            border: 1px solid #3282b8;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            margin-bottom: 8px;
-            min-height: 35px;
-        }
-        
-        .demo-row.header {
-            background: linear-gradient(135deg, #0f4c75, #3282b8);
-            font-weight: bold;
-            color: #bbe1fa;
-            text-shadow: 0 0 5px rgba(187, 225, 250, 0.5);
-            padding: 8px;
-            font-size: 14px;
-            margin-bottom: 10px;
-            min-height: 35px;
-        }
-        
-        .slot-cell {
-            overflow: visible;
-            height: 25px;
-            position: relative;
-        }
-        
-        .slot-content {
-            position: relative;
-            top: 0;
-            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            width: 100%;
-            color: #bbe1fa;
-            font-weight: bold;
-        }
-        
-        .slot-content.animate {
-            top: 0;
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1rem;
+            animation: fall linear infinite;
         }
         
         @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px 80px 100px 80px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 25px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .title {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 4rem;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 0px #228b22, 0 0 30px #ffd700;
+            margin-bottom: 15px;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 3px 3px 0px #228b22, 0 0 30px #ffd700; }
+            50% { text-shadow: 3px 3px 0px #228b22, 0 0 50px #ffd700, 0 0 70px #ff6b6b; }
+        }
+        
+        .journey-path {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .journey-line {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: linear-gradient(90deg, #228b22, #ffd700, #ff6b6b);
+            border-radius: 2px;
+            z-index: 1;
+        }
+        
+        .checkpoint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .checkpoint.active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .checkpoint.completed {
+            background: rgba(34, 139, 34, 0.3);
+            box-shadow: 0 0 20px rgba(34, 139, 34, 0.5);
+        }
+        
+        .checkpoint-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .santa-sleigh {
+            position: absolute;
+            top: -60px;
+            font-size: 4rem;
+            transition: all 2s ease;
+            animation: fly 2s infinite;
+            filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));
+        }
+        
+        @keyframes fly {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .blocks-panel {
+            order: 1;
+        }
+        
+        .query-panel {
+            order: 2;
+        }
+        
+        .score-panel {
+            order: 3;
+        }
+        
+        .panel {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .panel h3 {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 0px #228b22;
+        }
+        
+        .sql-block {
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%);
+            background-size: 300% 300%;
+            animation: marbleShift 4s ease-in-out infinite;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            cursor: grab;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 
+                0 10px 25px rgba(102, 126, 234, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes marbleShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .sql-block:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(102, 126, 234, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.4),
+                0 0 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .sql-block.correct {
+            background: linear-gradient(135deg, 
+                #4ecdc4 0%, 
+                #44a08d 25%, 
+                #093637 50%, 
+                #44a08d 75%, 
+                #4ecdc4 100%);
+            background-size: 300% 300%;
+            box-shadow: 
+                0 10px 25px rgba(78, 205, 196, 0.4),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        
+        .sql-block.wrong {
+            animation: marbleShake 0.5s ease, marbleShift 4s ease-in-out infinite;
+        }
+        
+        @keyframes marbleShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .query-builder {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+        
+        .query-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            min-height: 50px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .drop-zone {
+            min-width: 120px;
+            min-height: 40px;
+            border: 2px dashed #4ecdc4;
+            border-radius: 8px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(78, 205, 196, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        .drop-zone.highlight {
+            background: rgba(78, 205, 196, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+            border-color: #4ecdc4;
+        }
+        
+        .drop-zone.filled {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            border-style: solid;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.4);
+        }
+        
+        .query-text {
+            font-family: 'Fredoka One', cursive;
+            color: #e0e0e0;
+        }
+        
+        .score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 0px #228b22;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #228b22;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            border: 3px solid white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        
+        .celebration h2 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #228b22;
+        }
+        
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: explode 1.5s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(20); opacity: 0; }
+        }
+        
+        .creator-credit {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            z-index: 1000;
+        }
+        
+        .sci-fi-left, .sci-fi-right {
+            position: fixed;
+            top: 0;
+            width: 80px;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .sci-fi-left {
+            left: 0;
+            background: linear-gradient(90deg, rgba(78, 205, 196, 0.05) 0%, transparent 100%);
+        }
+        
+        .sci-fi-right {
+            right: 0;
+            background: linear-gradient(270deg, rgba(78, 205, 196, 0.05) 0%, transparent 100%);
+        }
+        
+        .sci-fi-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(0deg, rgba(78, 205, 196, 0.05) 0%, transparent 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .neon-line {
+            position: absolute;
+            background: #4ecdc4;
+            box-shadow: 0 0 8px #4ecdc4;
+            animation: neonPulse 3s infinite;
+        }
+        
+        @keyframes neonPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+        
+        .vertical-line {
+            width: 1px;
+            height: 60px;
+            left: 15px;
+        }
+        
+        .horizontal-line {
+            height: 1px;
+            width: 60px;
+            bottom: 15px;
+        }
+        
+        .circuit-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4ecdc4;
+            animation: dotPulse 4s infinite;
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        
+        .data-stream {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 8px;
+            color: #4ecdc4;
+            opacity: 0.4;
+            animation: dataFlow 6s linear infinite;
+        }
+        
+        @keyframes dataFlow {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-50px); }
+        }
+        
+        .crystal-tables {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(78, 205, 196, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(78, 205, 196, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        
+        .crystal-table {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(78, 205, 196, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .crystal-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.2), transparent);
+            animation: crystalScan 3s infinite;
+        }
+        
+        @keyframes crystalScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .table-header {
+            color: #4ecdc4;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .table-row {
+            color: #e0e0e0;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .rolling-number {
+            display: inline-block;
+            color: #4ecdc4;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(78, 205, 196, 0.8);
+            animation: numberRoll 2s infinite;
+        }
+        
+        @keyframes numberRoll {
+            0%, 80%, 100% { transform: translateY(0); }
+            10% { transform: translateY(-2px); }
+            20% { transform: translateY(2px); }
+            30% { transform: translateY(-1px); }
+            40% { transform: translateY(1px); }
+        }
+        
+        .solving-animation {
+            animation: solvingPulse 1.5s infinite;
+        }
+        
+        @keyframes solvingPulse {
+            0%, 100% { 
+                background: rgba(0,0,0,0.4);
+                border-color: rgba(78, 205, 196, 0.4);
+            }
+            50% { 
+                background: rgba(78, 205, 196, 0.1);
+                border-color: rgba(78, 205, 196, 0.8);
             }
         }
         
-        .demo-row .slot-content { 
-            color: #bbe1fa; 
+        .results-table {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            border: 2px solid #4ecdc4;
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        .results-header {
+            color: #4ecdc4;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px #4ecdc4;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .result-header {
+            background: #4ecdc4;
+            color: black;
+            padding: 8px;
+            border-radius: 5px;
             font-weight: bold;
+            text-align: center;
+        }
+        
+        .result-cell {
+            background: rgba(78, 205, 196, 0.1);
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            animation: cellPop 0.3s ease;
+        }
+        
+        @keyframes cellPop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        
+        .close-results {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #4ecdc4;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-results:hover {
+            color: #ffd700;
+            transform: scale(1.2);
+        @media (max-width: 1200px) {
+            .container {
+                padding: 20px;
+            }
+            .game-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .title {
+                font-size: 3rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        HYD Support Ops - Skill Development
+    <div class="creator-credit">
+        Created by Gaurav (@rathiga)
     </div>
-
-    <!-- Branding -->
-    <div class="branding">
-        <div><strong>Creator:</strong> Gaurav (rathiga)</div>
-        <div><strong>Pillar Head:</strong> Ambika (lingerka)</div>
-    </div>
-
+    
+    <div class="snow" id="snow"></div>
+    
     <div class="container">
-        <!-- User Name Input Section -->
-        <div class="code-block" id="nameInput">
-            <h2 style="text-align: center; margin-bottom: 20px;">🎮 Welcome to SQL Learning!</h2>
-            <p style="text-align: center; margin-bottom: 25px;">Enter your name to start your SQL journey:</p>
-            <div style="text-align: center;">
-                <input type="text" id="userName" class="query-input" placeholder="Enter your name..." style="max-width: 300px; margin: 0 auto; display: block;">
-                <button class="execute-btn" onclick="startGame()" style="margin-top: 15px;">🚀 Start Learning SQL!</button>
-            </div>
-        </div>
-
-        <!-- Main Game Content (initially hidden) -->
-        <div id="gameContent" style="display: none;">
-        
-        <h1 class="neon-title">SQL Week 1: SELECT *</h1>
-        
-        <!-- Explanation Section -->
-        <div class="code-block">
-            <h2>🔍 How SELECT * Works</h2>
-            <div class="explanation">
-                <p>The <span class="highlight">SELECT *</span> statement is like asking for "everything" from a table:</p>
-                <ul>
-                    <li><strong>SELECT</strong> = "I want to see..."</li>
-                    <li><strong>*</strong> = "all columns"</li>
-                    <li><strong>FROM table_name</strong> = "from this specific table"</li>
-                </ul>
-                
-                <div class="animation-demo" id="animationDemo">
-                    <h4>🎬 Watch it in action:</h4>
-                    <div class="demo-query">
-                        <div class="typing-text" id="typingQuery">SELECT * FROM Products;</div>
-                    </div>
-                    <div class="demo-table" id="demoTable">
-                        <div class="demo-row header">
-                            <span>ID</span><span>Product</span><span>Price</span>
-                        </div>
-                        <div class="demo-row">
-                            <div class="slot-cell"><div class="slot-content">1</div></div>
-                            <div class="slot-cell"><div class="slot-content">Gaming Laptop</div></div>
-                            <div class="slot-cell"><div class="slot-content">$1299</div></div>
-                        </div>
-                        <div class="demo-row">
-                            <div class="slot-cell"><div class="slot-content">2</div></div>
-                            <div class="slot-cell"><div class="slot-content">Smartphone</div></div>
-                            <div class="slot-cell"><div class="slot-content">$799</div></div>
-                        </div>
-                        <div class="demo-row">
-                            <div class="slot-cell"><div class="slot-content">3</div></div>
-                            <div class="slot-cell"><div class="slot-content">Wireless Headphones</div></div>
-                            <div class="slot-cell"><div class="slot-content">$299</div></div>
-                        </div>
-                    </div>
-                    <button class="execute-btn" onclick="playAnimation()" style="margin-top: 15px;">▶️ Play Animation</button>
-                </div>
-            </div>
+        <div class="header">
+            <h1 class="title">🎅 Santa's Christmas SQL Journey</h1>
+            <p style="font-size: 1.2rem; color: #e0e0e0;">
+                Help Santa solve SQL puzzles to deliver gifts to Amazon's Hub!
+            </p>
+            <p style="font-size: 1rem; color: #4ecdc4; margin-top: 10px; font-weight: 600;">
+                HYD Support Ops
+            </p>
         </div>
         
-        <!-- Example Section -->
-        <div class="code-block">
-            <h2>🎬 Example: Netflix Movies Database</h2>
-            <p>Let's practice with Netflix's movie catalog. Try the pre-filled query below:</p>
-            
-            <div class="table-container">
-                <div class="table-info">
-                    📋 Table: <strong>Movies</strong> | Columns: ID (number), Title (text), Genre (text), Rating (decimal)
-                </div>
-                <table id="moviesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Genre</th>
-                            <th>Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>Stranger Things</td><td>Sci-Fi</td><td>8.7</td></tr>
-                        <tr><td>2</td><td>The Crown</td><td>Drama</td><td>8.6</td></tr>
-                        <tr><td>3</td><td>Squid Game</td><td>Thriller</td><td>8.0</td></tr>
-                    </tbody>
-                </table>
+        <div class="journey-path">
+            <div class="journey-line"></div>
+            <div class="checkpoint active" id="checkpoint1">
+                <div class="checkpoint-icon">🏠</div>
+                <span>North Pole</span>
             </div>
-            
-            <input type="text" class="query-input" id="sqlQuery" value="SELECT * FROM Movies;">
-            <button class="execute-btn" onclick="executeQuery()">⚡ Execute Query</button>
-            
-            <div id="result" class="result" style="display:none;">
-                <h4>✅ Perfect! You retrieved all movies from the database.</h4>
+            <div class="checkpoint" id="checkpoint2">
+                <div class="checkpoint-icon">🌲</div>
+                <span>Forest</span>
             </div>
+            <div class="checkpoint" id="checkpoint3">
+                <div class="checkpoint-icon">🏔️</div>
+                <span>Mountains</span>
+            </div>
+            <div class="checkpoint" id="checkpoint4">
+                <div class="checkpoint-icon">🌃</div>
+                <span>City</span>
+            </div>
+            <div class="checkpoint" id="checkpoint5">
+                <div class="checkpoint-icon">📦</div>
+                <span>Amazon Hub</span>
+            </div>
+            <div class="santa-sleigh" id="santaSleigh">🎅🦌🛷</div>
         </div>
         
-        <!-- Level 2: SELECT Single Column -->
-        <div class="code-block" id="level2" style="display:none;">
-            <h2>🎯 Level 2: SELECT Single Column</h2>
-            <p>Great! Now let's select just ONE column. Sometimes you only need specific information:</p>
-            
-            <div class="table-container">
-                <div class="table-info">
-                    📋 Table: <strong>Movies</strong> | Challenge: Get only movie titles
-                </div>
-                <table>
-                    <thead><tr><th>ID</th><th>Title</th><th>Genre</th><th>Rating</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td>Stranger Things</td><td>Sci-Fi</td><td>8.7</td></tr>
-                        <tr><td>2</td><td>The Crown</td><td>Drama</td><td>8.6</td></tr>
-                        <tr><td>3</td><td>Squid Game</td><td>Thriller</td><td>8.0</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <input type="text" class="query-input" id="sqlQuery2" placeholder="SELECT title FROM Movies;">
-            <button class="hint-btn" onclick="showHint(2)">💡 Hint</button>
-            <button class="execute-btn" onclick="executeQuery2()">⚡ Execute</button>
-            <div id="hint2" style="display:none; margin-top:10px; color:#ffaa00;">
-                💡 Use: SELECT column_name FROM table_name;
-            </div>
-            <div id="result2" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- Level 3: SELECT Two Columns -->
-        <div class="code-block" id="level3" style="display:none;">
-            <h2>👥 Level 3: SELECT Two Columns</h2>
-            <p>Perfect! Now select TWO specific columns - like making a contact list:</p>
-            
-            <div class="table-container">
-                <div class="table-info">
-                    📋 Table: <strong>Users</strong> | Challenge: Get name and email for contacts
-                </div>
-                <table>
-                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>City</th></tr></thead>
-                    <tbody>
-                        <tr><td>101</td><td>Alice Johnson</td><td>alice@email.com</td><td>New York</td></tr>
-                        <tr><td>102</td><td>Bob Smith</td><td>bob@email.com</td><td>London</td></tr>
-                        <tr><td>103</td><td>Carol Davis</td><td>carol@email.com</td><td>Tokyo</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <input type="text" class="query-input" id="sqlQuery3" placeholder="SELECT name, email FROM Users;">
-            <button class="hint-btn" onclick="showHint(3)">💡 Hint</button>
-            <button class="execute-btn" onclick="executeQuery3()">⚡ Execute</button>
-            <div id="hint3" style="display:none; margin-top:10px; color:#ffaa00;">
-                💡 Use: SELECT column1, column2 FROM table_name;
-            </div>
-            <div id="result3" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- Level 4: SELECT Multiple Columns -->
-        <div class="code-block" id="level4" style="display:none;">
-            <h2>🏆 Level 4: SELECT Multiple Columns</h2>
-            <p>Excellent! Final challenge - select THREE columns for movie recommendations:</p>
-            
-            <div class="table-container">
-                <div class="table-info">
-                    📋 Table: <strong>Movies</strong> | Challenge: Get title, genre, and rating
-                </div>
-                <table>
-                    <thead><tr><th>ID</th><th>Title</th><th>Genre</th><th>Rating</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td>Stranger Things</td><td>Sci-Fi</td><td>8.7</td></tr>
-                        <tr><td>2</td><td>The Crown</td><td>Drama</td><td>8.6</td></tr>
-                        <tr><td>3</td><td>Squid Game</td><td>Thriller</td><td>8.0</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <input type="text" class="query-input" id="sqlQuery4" placeholder="SELECT title, genre, rating FROM Movies;">
-            <button class="hint-btn" onclick="showHint(4)">💡 Hint</button>
-            <button class="execute-btn" onclick="executeQuery4()">⚡ Execute</button>
-            <div id="hint4" style="display:none; margin-top:10px; color:#ffaa00;">
-                💡 Use: SELECT column1, column2, column3 FROM table_name;
-            </div>
-            <div id="result4" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- Amazing Celebration -->
-        <div class="code-block" id="celebration" style="display:none;">
-            <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; margin: 30px 0;">
-                <h1 style="color: white; font-size: 4rem; margin-bottom: 20px; animation: bounce 2s infinite;">🎉 AMAZING! 🎉</h1>
-                <h2 style="color: white; margin-bottom: 20px; font-size: 2rem;"><span id="celebrationName"></span>, You've Mastered the SELECT Statement!</h2>
-                <p style="color: white; font-size: 1.3em; margin-bottom: 25px;">
-                    🌟 You now know how to retrieve data from databases like a pro! 🌟
-                </p>
-                <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px; margin: 25px 0;">
-                    <h3 style="color: white; margin-bottom: 20px; font-size: 1.5rem;">🏆 What You've Learned:</h3>
-                    <div style="text-align: left; color: white; font-size: 1.1em;">
-                        <p style="margin: 12px 0;">✅ SELECT * - Get all data from a table</p>
-                        <p style="margin: 12px 0;">✅ SELECT single column - Get specific information</p>
-                        <p style="margin: 12px 0;">✅ SELECT multiple columns - Get exactly what you need</p>
-                        <p style="margin: 12px 0;">✅ Building efficient queries step by step</p>
+        <div class="game-area">
+            <!-- SQL Blocks Panel -->
+            <div class="panel blocks-panel">
+                <h3>🎁 SQL Christmas Blocks</h3>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="background: rgba(255,215,0,0.2); padding: 10px; border-radius: 10px;">
+                        <strong id="levelTitle">Level 1: North Pole Workshop</strong>
                     </div>
                 </div>
-                <h3 style="color: white; margin-top: 30px; font-size: 1.8rem;">🚀 <span id="celebrationName2"></span>, You're Ready for Advanced SQL!</h3>
-                <p style="color: white; font-size: 1.2em;">Keep practicing and you'll become a SQL wizard! 🧙‍♂️</p>
-                
-                <div style="margin-top: 30px;">
-                    <div style="display: inline-block; margin: 0 20px; text-align: center;">
-                        <div style="font-size: 2rem; color: #ffeb3b;">🎯</div>
-                        <div style="color: white; font-weight: bold;">4/4 Levels</div>
-                        <div style="color: white;">Completed</div>
-                    </div>
-                    <div style="display: inline-block; margin: 0 20px; text-align: center;">
-                        <div style="font-size: 2rem; color: #4caf50;">🏆</div>
-                        <div style="color: white; font-weight: bold;">SQL Master</div>
-                        <div style="color: white;">Certificate</div>
-                    </div>
-                    <div style="display: inline-block; margin: 0 20px; text-align: center;">
-                        <div style="font-size: 2rem; color: #ff9800;">📈</div>
-                        <div style="color: white; font-weight: bold;">Level Up!</div>
-                        <div style="color: white;">Beginner → Pro</div>
+                <div id="blocksContainer">
+                    <!-- Blocks populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Query Builder Panel -->
+            <div class="panel query-panel">
+                <h3 id="queryTitle">🔧 Fix Santa's Database</h3>
+                <div class="query-builder" id="queryBuilder">
+                    <!-- Query lines populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Score Panel -->
+            <div class="panel score-panel">
+                <h3>🎯 Christmas Score</h3>
+                <div style="text-align: center;">
+                    <div class="score" id="score">0</div>
+                    <p style="margin-bottom: 20px; color: #e0e0e0;" id="missionText">
+                        Drag SQL blocks to help Santa!
+                    </p>
+                    <button class="btn" onclick="resetLevel()">🔄 Reset Level</button>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <h4 style="color: #ffd700; margin-bottom: 10px;">🎄 Mission</h4>
+                        <p style="font-size: 0.9rem; color: #e0e0e0;" id="levelDescription">
+                            Help Santa find all toys in his workshop!
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-        
-        </div>
-        <!-- End of Game Content -->
     </div>
-
+    
+    <!-- Celebration Modal -->
+    <div class="celebration" id="celebration">
+        <h2>🎉 Level Complete! 🎉</h2>
+        <p style="font-size: 1.2rem; color: white; margin-bottom: 20px;" id="celebrationMessage">
+            Great job! Santa is moving to the next location!
+        </p>
+        <button onclick="closeCelebration()" class="btn">Continue Journey! 🎅</button>
+    </div>
+    
+    <!-- Final Celebration -->
+    <div class="celebration" id="finalCelebration" style="background: linear-gradient(45deg, #228b22, #ffd700);">
+        <h2>🎅 CHRISTMAS SAVED! 🎁</h2>
+        <p style="font-size: 1.3rem; color: white; margin: 20px 0;">
+            Ho Ho Ho! Thank you for helping me deliver all the gifts!<br>
+            🎄 MERRY CHRISTMAS! 🎄
+        </p>
+        <div style="font-size: 3rem; margin: 20px 0;">🎅🎁🎄✨🦌</div>
+        <button onclick="resetGame()" class="btn">Play Again! 🎮</button>
+    </div>
+    
+    <div class="fireworks" id="fireworks"></div>
+    
     <script>
-        let userName = '';
+        let currentLevel = 1;
+        let score = 0;
+        let correctPlacements = 0;
+        let totalDropZones = 0;
         
-        function startGame() {
-            const nameInput = document.getElementById('userName').value.trim();
-            if (nameInput) {
-                userName = nameInput;
-                document.getElementById('nameInput').style.display = 'none';
-                document.getElementById('gameContent').style.display = 'block';
-                
-                // Auto-play animation after game starts
-                setTimeout(playAnimation, 1000);
-            } else {
-                alert('Please enter your name to start!');
+        const levels = [
+            {
+                title: "Level 1: North Pole Workshop",
+                description: "🎁 Santa's elves need to see all toys in the magical workshop inventory before Christmas Eve!",
+                problem: "The head elf needs a complete list of every toy in Santa's workshop. Help them by selecting all data from the toys table.",
+                query: [
+                    { dropZone: "SELECT", text: "* FROM toys;" }
+                ],
+                blocks: ["SELECT", "FROM", "WHERE", "SELCT", "FORM", "WERE"],
+                correctBlocks: ["SELECT"]
+            },
+            {
+                title: "Level 2: Enchanted Forest",
+                description: "🌲 The forest elves need specific toy details to prepare gift wrapping materials!",
+                problem: "The wrapping elves only need toy names and prices to calculate ribbon and paper needed. Select just these two columns.",
+                query: [
+                    { dropZone: "SELECT", text: "toy_name, price" },
+                    { dropZone: "FROM", text: "toys;" }
+                ],
+                blocks: ["SELECT", "FROM", "WHERE", "ORDER BY", "SELCT", "FORM"],
+                correctBlocks: ["SELECT", "FROM"]
+            },
+            {
+                title: "Level 3: Snowy Mountains", 
+                description: "🏔️ Santa's nice list filter is broken! Only well-behaved children should get gifts!",
+                problem: "The naughty-or-nice detector needs repair. Find gifts only for children with behavior_score of 8 or higher (the nice ones!).",
+                query: [
+                    { dropZone: "SELECT", text: "gift_name, child_name" },
+                    { dropZone: "FROM", text: "gift_list" },
+                    { dropZone: "WHERE", text: "behavior_score >= 8;" }
+                ],
+                blocks: ["SELECT", "FROM", "WHERE", "ORDER BY", "SELCT", "FORM", "WERE"],
+                correctBlocks: ["SELECT", "FROM", "WHERE"]
+            },
+            {
+                title: "Level 4: Christmas City",
+                description: "🌃 The delivery route optimizer needs gifts sorted alphabetically for efficient sleigh loading!",
+                problem: "Santa's GPS system works best with alphabetically sorted gift lists. Sort all ready gifts by name for optimal delivery routes.",
+                query: [
+                    { dropZone: "SELECT", text: "gift_name, recipient" },
+                    { dropZone: "FROM", text: "deliveries" },
+                    { dropZone: "WHERE", text: "status = 'ready'" },
+                    { dropZone: "ORDER BY", text: "gift_name;" }
+                ],
+                blocks: ["SELECT", "FROM", "WHERE", "ORDER BY", "SELCT", "FORM", "WERE", "ODER BY"],
+                correctBlocks: ["SELECT", "FROM", "WHERE", "ORDER BY"]
+            },
+            {
+                title: "Level 5: Amazon Gift Hub",
+                description: "📦 Final destination! Santa's partnership with Amazon needs the ultimate delivery query!",
+                problem: "Amazon's warehouse system needs all Christmas Day deliveries sorted by priority. This is the final query to save Christmas!",
+                query: [
+                    { dropZone: "SELECT", text: "gift_name, recipient" },
+                    { dropZone: "FROM", text: "amazon_deliveries" },
+                    { dropZone: "WHERE", text: "delivery_date = '2024-12-25'" },
+                    { dropZone: "ORDER BY", text: "priority DESC;" }
+                ],
+                blocks: ["SELECT", "FROM", "WHERE", "ORDER BY", "SELCT", "FORM", "WERE", "ODER BY"],
+                correctBlocks: ["SELECT", "FROM", "WHERE", "ORDER BY"]
             }
-        }
-        function executeQuery() {
-            const query = document.getElementById('sqlQuery').value.trim();
-            const result = document.getElementById('result');
-            
-            if (query.toLowerCase().includes('select * from movies')) {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>✅ Perfect! You retrieved all movies from the database.</h4>';
-                
-                // Add animation effect
-                const rows = document.querySelectorAll('#moviesTable tbody tr');
-                rows.forEach((row, index) => {
-                    setTimeout(() => {
-                        row.style.background = '#00ff4120';
-                        row.style.transform = 'scale(1.02)';
-                        setTimeout(() => {
-                            row.style.background = '';
-                            row.style.transform = '';
-                        }, 500);
-                    }, index * 200);
-                });
-                
-                // Show level 2 after 2 seconds
-                setTimeout(() => {
-                    document.getElementById('level2').style.display = 'block';
-                    document.getElementById('level2').scrollIntoView({ behavior: 'smooth' });
-                }, 2000);
-                
-            } else {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>❌ Try again! Hint: Use SELECT * FROM Movies;</h4>';
-                result.style.background = '#4f0d0d';
-            }
+        ];
+        
+        function initGame() {
+            createSnow();
+            loadLevel(currentLevel);
         }
         
-        function executeQuery2() {
-            const query = document.getElementById('sqlQuery2').value.trim();
-            const result = document.getElementById('result2');
-            
-            if (query.toLowerCase().includes('select title from movies')) {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>🎉 Perfect! You selected just the titles!</h4>';
-                result.style.background = '#0d4f0d';
-                
-                // Animate table transformation
-                const table = document.querySelector('#level2 table');
-                const rows = table.querySelectorAll('tr');
-                
-                // Hide non-title columns with animation
-                rows.forEach((row, index) => {
-                    const cells = row.querySelectorAll('th, td');
-                    [0, 2, 3].forEach(colIndex => { // Hide ID, Genre, Rating columns
-                        if (cells[colIndex]) {
-                            setTimeout(() => {
-                                cells[colIndex].style.transition = 'all 0.5s ease';
-                                cells[colIndex].style.opacity = '0';
-                                cells[colIndex].style.width = '0';
-                                cells[colIndex].style.padding = '0';
-                                setTimeout(() => cells[colIndex].style.display = 'none', 500);
-                            }, index * 100);
-                        }
-                    });
-                    
-                    // Highlight remaining title column
-                    if (cells[1]) {
-                        setTimeout(() => {
-                            cells[1].style.transition = 'all 0.3s ease';
-                            cells[1].style.boxShadow = '0 0 15px rgba(187, 225, 250, 0.8)';
-                        }, (index * 100) + 600);
-                    }
-                });
-                
-                setTimeout(() => {
-                    document.getElementById('level3').style.display = 'block';
-                    document.getElementById('level3').scrollIntoView({ behavior: 'smooth' });
-                }, 3000);
-            } else {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>❌ Try again! Select only the title column.</h4>';
-                result.style.background = '#4f0d0d';
-            }
-        }
-        
-        function executeQuery3() {
-            const query = document.getElementById('sqlQuery3').value.trim();
-            const result = document.getElementById('result3');
-            
-            if (query.toLowerCase().includes('select name, email from users') || 
-                query.toLowerCase().includes('select name,email from users')) {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>🌟 Excellent! You selected two columns!</h4>';
-                result.style.background = '#0d4f0d';
-                
-                // Animate table transformation
-                const table = document.querySelector('#level3 table');
-                const rows = table.querySelectorAll('tr');
-                
-                // Hide ID and City columns
-                rows.forEach((row, index) => {
-                    const cells = row.querySelectorAll('th, td');
-                    [0, 3].forEach(colIndex => { // Hide ID and City columns
-                        if (cells[colIndex]) {
-                            setTimeout(() => {
-                                cells[colIndex].style.transition = 'all 0.5s ease';
-                                cells[colIndex].style.opacity = '0';
-                                cells[colIndex].style.width = '0';
-                                cells[colIndex].style.padding = '0';
-                                setTimeout(() => cells[colIndex].style.display = 'none', 500);
-                            }, index * 100);
-                        }
-                    });
-                    
-                    // Highlight remaining name and email columns
-                    [1, 2].forEach(colIndex => {
-                        if (cells[colIndex]) {
-                            setTimeout(() => {
-                                cells[colIndex].style.transition = 'all 0.3s ease';
-                                cells[colIndex].style.boxShadow = '0 0 15px rgba(187, 225, 250, 0.8)';
-                            }, (index * 100) + 600);
-                        }
-                    });
-                });
-                
-                setTimeout(() => {
-                    document.getElementById('level4').style.display = 'block';
-                    document.getElementById('level4').scrollIntoView({ behavior: 'smooth' });
-                }, 3000);
-            } else {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>❌ Try again! Select name and email columns.</h4>';
-                result.style.background = '#4f0d0d';
-            }
-        }
-        
-        function executeQuery4() {
-            const query = document.getElementById('sqlQuery4').value.trim();
-            const result = document.getElementById('result4');
-            
-            if (query.toLowerCase().includes('select title, genre, rating from movies') || 
-                query.toLowerCase().includes('select title,genre,rating from movies')) {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>🚀 AMAZING! Final level completed!</h4>';
-                result.style.background = '#0d4f0d';
-                
-                // Animate table transformation
-                const table = document.querySelector('#level4 table');
-                const rows = table.querySelectorAll('tr');
-                
-                // Hide ID column
-                rows.forEach((row, index) => {
-                    const cells = row.querySelectorAll('th, td');
-                    if (cells[0]) { // Hide ID column
-                        setTimeout(() => {
-                            cells[0].style.transition = 'all 0.5s ease';
-                            cells[0].style.opacity = '0';
-                            cells[0].style.width = '0';
-                            cells[0].style.padding = '0';
-                            setTimeout(() => cells[0].style.display = 'none', 500);
-                        }, index * 100);
-                    }
-                    
-                    // Highlight remaining title, genre, rating columns
-                    [1, 2, 3].forEach(colIndex => {
-                        if (cells[colIndex]) {
-                            setTimeout(() => {
-                                cells[colIndex].style.transition = 'all 0.3s ease';
-                                cells[colIndex].style.boxShadow = '0 0 15px rgba(187, 225, 250, 0.8)';
-                            }, (index * 100) + 600);
-                        }
-                    });
-                });
-                
-                // Show celebration after 3 seconds
-                setTimeout(() => {
-                    // Set user name in celebration
-                    document.getElementById('celebrationName').textContent = userName;
-                    document.getElementById('celebrationName2').textContent = userName;
-                    
-                    document.getElementById('celebration').style.display = 'block';
-                    document.getElementById('celebration').scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Trigger confetti effect
-                    createConfetti();
-                }, 3000);
-            } else {
-                result.style.display = 'block';
-                result.innerHTML = '<h4>❌ Try again! Select title, genre, and rating.</h4>';
-                result.style.background = '#4f0d0d';
-            }
-        }
-        
-        function showHint(level) {
-            document.getElementById('hint' + (level || '')).style.display = 'block';
-        }
-        
-        function createConfetti() {
-            const colors = ['#ff6b9d', '#4ecdc4', '#ffe66d', '#ff9f43', '#a55eea'];
+        function createSnow() {
+            const snow = document.getElementById('snow');
             for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.style.position = 'fixed';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.top = '-10px';
-                    confetti.style.width = '10px';
-                    confetti.style.height = '10px';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.borderRadius = '50%';
-                    confetti.style.zIndex = '9999';
-                    confetti.style.animation = 'fall 3s linear forwards';
-                    document.body.appendChild(confetti);
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = ['❄', '❅', '❆'][Math.floor(Math.random() * 3)];
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+                snowflake.style.animationDelay = Math.random() * 2 + 's';
+                snow.appendChild(snowflake);
+            }
+        }
+        
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+        
+        function loadLevel(levelNum) {
+            const level = levels[levelNum - 1];
+            if (!level) return;
+            
+            document.getElementById('levelTitle').textContent = level.title;
+            document.getElementById('levelDescription').innerHTML = level.description + '<br><br><strong>Problem:</strong> ' + level.problem;
+            document.getElementById('queryTitle').innerHTML = `🔧 ${level.title}`;
+            
+            loadBlocks(level.blocks);
+            loadQueryBuilder(level.query);
+            
+            correctPlacements = 0;
+            totalDropZones = level.query.filter(line => line.dropZone).length; // Count actual drop zones
+            console.log('Level loaded:', levelNum, 'Total drop zones needed:', totalDropZones); // Debug
+            updateSantaPosition();
+        }
+        
+        function loadBlocks(blocks) {
+            const container = document.getElementById('blocksContainer');
+            container.innerHTML = '';
+            
+            blocks.forEach(block => {
+                const blockElement = document.createElement('div');
+                blockElement.className = 'sql-block';
+                blockElement.draggable = true;
+                blockElement.dataset.value = block;
+                blockElement.textContent = block;
+                
+                blockElement.addEventListener('dragstart', handleDragStart);
+                blockElement.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(blockElement);
+            });
+        }
+        
+        function loadQueryBuilder(queryLines) {
+            const container = document.getElementById('queryBuilder');
+            container.innerHTML = '';
+            
+            queryLines.forEach(line => {
+                const lineElement = document.createElement('div');
+                lineElement.className = 'query-line';
+                
+                if (line.dropZone) {
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.dataset.correct = line.dropZone;
                     
-                    setTimeout(() => confetti.remove(), 3000);
+                    dropZone.addEventListener('dragover', handleDragOver);
+                    dropZone.addEventListener('dragenter', handleDragEnter);
+                    dropZone.addEventListener('dragleave', handleDragLeave);
+                    dropZone.addEventListener('drop', handleDrop);
+                    
+                    lineElement.appendChild(dropZone);
+                }
+                
+                const textElement = document.createElement('span');
+                textElement.className = 'query-text';
+                textElement.textContent = line.text;
+                lineElement.appendChild(textElement);
+                
+                container.appendChild(lineElement);
+            });
+        }
+        
+        let draggedElement = null;
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.style.opacity = '0.5';
+        }
+        
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        }
+        
+        function handleDragLeave(e) {
+            this.classList.remove('highlight');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            if (draggedElement && !this.classList.contains('filled')) {
+                const droppedValue = draggedElement.dataset.value;
+                const correctValue = this.dataset.correct;
+                
+                console.log('Dropped:', droppedValue, 'Expected:', correctValue); // Debug
+                
+                if (droppedValue === correctValue) {
+                    this.textContent = droppedValue;
+                    this.classList.add('filled');
+                    draggedElement.classList.add('correct');
+                    draggedElement.style.display = 'none';
+                    
+                    score += 100;
+                    correctPlacements++;
+                    updateScore();
+                    createFireworks(e.clientX, e.clientY);
+                    
+                    console.log('Correct placements:', correctPlacements, 'Total needed:', totalDropZones); // Debug
+                    
+                    if (correctPlacements === totalDropZones) {
+                        console.log('Level complete!'); // Debug
+                        setTimeout(completeLevel, 1000);
+                    }
+                } else {
+                    draggedElement.classList.add('wrong');
+                    setTimeout(() => {
+                        draggedElement.classList.remove('wrong');
+                    }, 500);
+                    score = Math.max(0, score - 20);
+                    updateScore();
+                }
+            }
+        }
+        
+        function updateCrystalTables() {
+            // Update current level
+            document.getElementById('currentLevelNum').textContent = currentLevel;
+            
+            // Update XP points (same as score)
+            document.getElementById('xpPoints').textContent = score;
+            
+            // Update blocks used
+            document.getElementById('blocksUsed').textContent = correctPlacements;
+            document.getElementById('totalBlocks').textContent = totalDropZones;
+            
+            // Update accuracy
+            const accuracy = totalDropZones > 0 ? Math.round((correctPlacements / totalDropZones) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy;
+            
+            // Animate toy count with random fluctuation
+            const toyCount = document.getElementById('toyCount');
+            const baseCount = 247 + (currentLevel - 1) * 50;
+            const randomFluctuation = Math.floor(Math.random() * 10) - 5;
+            toyCount.textContent = baseCount + randomFluctuation;
+            
+            // Animate query time
+            const queryTime = document.getElementById('queryTime');
+            const baseTime = 0.03 + Math.random() * 0.02;
+            queryTime.textContent = baseTime.toFixed(3);
+        }
+        
+        function triggerSolvingAnimation() {
+            const tables = document.querySelectorAll('.crystal-table');
+            tables.forEach(table => {
+                table.classList.add('solving-animation');
+                setTimeout(() => {
+                    table.classList.remove('solving-animation');
+                }, 2000);
+            });
+        }
+        
+        function rollNumbers() {
+            const rollingNumbers = document.querySelectorAll('.rolling-number');
+            rollingNumbers.forEach(number => {
+                number.style.animation = 'none';
+                setTimeout(() => {
+                    number.style.animation = 'numberRoll 2s infinite';
+                }, 10);
+            });
+        }
+        
+        function updateSantaPosition() {
+            const sleigh = document.getElementById('santaSleigh');
+            const checkpoints = document.querySelectorAll('.checkpoint');
+            const activeCheckpoint = checkpoints[currentLevel - 1];
+            
+            if (activeCheckpoint) {
+                const rect = activeCheckpoint.getBoundingClientRect();
+                const containerRect = activeCheckpoint.parentElement.getBoundingClientRect();
+                const position = ((rect.left - containerRect.left) / containerRect.width) * 100;
+                sleigh.style.left = position + '%';
+            }
+        }
+        
+        function completeLevel() {
+            console.log('completeLevel called for level:', currentLevel); // Debug
+            
+            const checkpoint = document.getElementById(`checkpoint${currentLevel}`);
+            checkpoint.classList.remove('active');
+            checkpoint.classList.add('completed');
+            
+            if (currentLevel < 5) {
+                showCelebration();
+                currentLevel++;
+                const nextCheckpoint = document.getElementById(`checkpoint${currentLevel}`);
+                nextCheckpoint.classList.add('active');
+            } else {
+                showFinalCelebration();
+            }
+            
+            updateSantaPosition();
+        }
+        
+        function showCelebration() {
+            const messages = [
+                "🏠 Santa is leaving the North Pole!",
+                "🌲 Through the Enchanted Forest!",
+                "🏔️ Over the Snowy Mountains!",
+                "🌃 Into Christmas City!",
+                "📦 Reached Amazon Gift Hub!"
+            ];
+            
+            document.getElementById('celebrationMessage').textContent = messages[currentLevel - 1];
+            document.getElementById('celebration').style.display = 'block';
+            createMassiveFireworks();
+        }
+        
+        function closeCelebration() {
+            document.getElementById('celebration').style.display = 'none';
+            setTimeout(() => loadLevel(currentLevel), 500);
+        }
+        
+        function showFinalCelebration() {
+            document.getElementById('finalCelebration').style.display = 'block';
+            createMassiveFireworks();
+        }
+        
+        function createFireworks(x, y) {
+            const colors = ['#ff6b6b', '#ffd700', '#28a745', '#4ecdc4'];
+            for (let i = 0; i < 8; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.getElementById('fireworks').appendChild(firework);
+                
+                setTimeout(() => firework.remove(), 1500);
+            }
+        }
+        
+        function createMassiveFireworks() {
+            const colors = ['#ff6b6b', '#ffd700', '#28a745', '#4ecdc4', '#ff4757'];
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * window.innerWidth + 'px';
+                    firework.style.top = Math.random() * window.innerHeight + 'px';
+                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    document.getElementById('fireworks').appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 1500);
                 }, i * 100);
             }
         }
         
-        function playAnimation() {
-            // Reset typing animation
-            const typingQuery = document.getElementById('typingQuery');
-            const demoTable = document.getElementById('demoTable');
-            
-            // Reset typing
-            typingQuery.style.animation = 'none';
-            typingQuery.style.width = '0';
-            demoTable.classList.remove('show');
-            
-            // Start typing animation
-            setTimeout(() => {
-                typingQuery.style.animation = 'typing 3s steps(20, end) forwards, blink-caret 0.75s step-end infinite';
-            }, 100);
-            
-            // Show table after typing completes
-            setTimeout(() => {
-                demoTable.classList.add('show');
-            }, 3500);
+        function resetLevel() {
+            loadLevel(currentLevel);
+            document.querySelectorAll('.checkpoint').forEach((checkpoint, index) => {
+                checkpoint.classList.remove('active', 'completed');
+                if (index === currentLevel - 1) {
+                    checkpoint.classList.add('active');
+                } else if (index < currentLevel - 1) {
+                    checkpoint.classList.add('completed');
+                }
+            });
+            updateSantaPosition();
         }
         
-        // Auto-play animation on page load - removed since we now start after name input
-        // window.addEventListener('load', () => {
-        //     setTimeout(playAnimation, 1000);
-        // });
+        function resetGame() {
+            currentLevel = 1;
+            score = 0;
+            document.getElementById('finalCelebration').style.display = 'none';
+            resetLevel();
+        }
+        
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
